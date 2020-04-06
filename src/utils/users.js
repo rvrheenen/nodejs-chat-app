@@ -42,9 +42,14 @@ const getUsersInRoom = (room) => {
     return users.filter(user => user.room == room.trim().toLowerCase())
 }
 
+const getRooms = () => {
+    return Array.from(new Set(users.map(u => u.room)))
+}
+
 module.exports = {
     addUser,
     removeUser,
     getUser,
-    getUsersInRoom
+    getUsersInRoom,
+    getRooms
 }

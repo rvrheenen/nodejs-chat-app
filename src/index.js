@@ -10,7 +10,8 @@ const {
     addUser,
     removeUser,
     getUser,
-    getUsersInRoom
+    getUsersInRoom,
+    getRooms
 } = require("./utils/users")
 
 const ADMIN = "admin"
@@ -25,12 +26,13 @@ const publicDirectoryPath = path.join(__dirname, "..", "public")
 
 app.use(express.static(publicDirectoryPath))
 
+app.get("/rooms", (req, res) => {
+    res.send({rooms: getRooms()})
+})
+
 
 // socket events
 io.on("connection", (socket) => {
-    console.log("New Websocket connection")
-
-    
     socket.on("joinRoom", (options, callback) => {
         var {error, user} = addUser({id: socket.id, ...options})
         if (error) return callback(error)
@@ -74,7 +76,6 @@ io.on("connection", (socket) => {
 
     socket.on("disconnect", () => {
         var user  = removeUser(socket.id)
-        console.log("Removed user:", user)
         if (user) {
             io.to(user.room).emit("message", generateMessage(ADMIN, `${user.username} has left.`))
             io.to(user.room).emit('roomData', {

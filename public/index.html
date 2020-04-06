@@ -13,10 +13,31 @@
                     <label for="username"></label>
                     <input type="text" name="username" placeholder="Display name" required />
                     <label for="room">Room</label>
-                    <input type="text" name="room" placeholder="Room" required>
+                    <input id="roomInput" type="text" name="room" placeholder="Room" list="roomsList" required autocomplete="off">
+                    <datalist id="roomsList">
+                    </datalist>
                     <button>Join</button>
                 </form>
             </div>
         </div>
+
+        <script>
+            document.querySelector('#roomInput').addEventListener("focus", () => {
+                if (document.querySelector('#roomsList').options.length > 0) return
+                fetch(`/rooms`).then( (response) => {
+                    response.json().then((data) => {
+                        if (data.rooms) {
+                            console.log(data.rooms)
+                            data.rooms.forEach(room => {
+                                var opt = document.createElement("option")
+                                opt.value = room
+                                opt.innerHTML = room
+                                document.querySelector('#roomsList').appendChild(opt)
+                            })
+                        }
+                    })
+                })
+            })
+        </script>
     </body>
 </html>
